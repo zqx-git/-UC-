@@ -1,0 +1,622 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>UC信息流</title>
+  <link rel="stylesheet" href="../css/bass.css">
+  <link rel="stylesheet" href="../css/iconfont.css">
+  <link rel="stylesheet" href="../css/index.css">
+  <script src="https://cdn.bootcss.com/jquery/3.4.1/jquery.min.js"> </script>
+  <script src="../js/template-web.js"></script>
+  <script src="../js/bass.js"></script>
+  <style>
+  </style>
+</head>
+
+<body>
+  <div class="search">
+    <div>
+      <button>搜 索</button>
+      <span class="fenge">|</span>
+      <span class="iconfont icon-cuowu hidden" id="clearSousuoInput" onclick="clearsousuo()"></span>
+      <input type="text" placeholder="请输入要搜索的内容" id="sousuoInput" />
+      <span class="iconfont icon-sousuo"></span>
+    </div>
+  </div>
+  <div class="nav">
+    <div>
+      <ul id="navList">
+      </ul>
+    </div>
+  </div>
+  <div class="content">
+    <!-- <ul id="articles1">
+    </ul> -->
+  </div>
+</body>
+<script type="text/javascript">
+  template.defaults.imports.getTime = function (mss) {
+    var hours = parseInt((mss % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+    var minutes = parseInt((mss % (1000 * 60 * 60)) / (1000 * 60));
+    var seconds = (mss % (1000 * 60)) / 1000;
+    hours = hours < 10 ? ('0' + hours) : hours;
+    minutes = minutes < 10 ? ('0' + minutes) : minutes;
+    seconds = seconds < 10 ? ('0' + seconds) : seconds;
+    // return hours + ":" + minutes + ":" + seconds;
+    return minutes + ":" + seconds;
+  }
+  template.defaults.imports.getNumber = function (mss) {
+    if (mss < 10000) {
+      return mss + '播放'
+    } else if (mss >= 10000) {
+      return parseFloat((mss / 10000).toFixed(1)) + '万播放'
+    } else {}
+  }
+</script>
+<script type="text/template" id="tmp1">
+  {{each channel v i}}
+    <li onclick="djnav(this,{{v.id}})">{{v.name}}</li>
+  {{/each}}
+</script>
+<script type="text/template" id="tmp2">
+  {{each items v i}}
+    {{if $data.articles[v.id].style_type == 1 && $data.articles[v.id].item_type != 8}}
+    <li class="styletype1" onclick="window.location.href='{{$data.articles[v.id].url}}'">
+      <div class="left">
+        <h5 class="title">{{$data.articles[v.id].title}}</h5>
+        <div class="foot">
+          <!-- <span class="grab_time">15分钟前</span> -->
+          <span class="source_name">{{$data.articles[v.id].source_name}}</span>
+          <span class="iconfont icon-pinglun"></span>
+          <span class="cmt_cnt">{{$data.articles[v.id].cmt_cnt}}</span>
+        </div>
+      </div>
+      <div class="right">
+        <img class="thumbnails" src="{{$data.articles[v.id].thumbnails[0].url+'&width=100&height=73'}}" alt="这是唯一的一张图">
+      </div>
+    </li>
+    {{else if $data.articles[v.id].style_type == 0 && $data.articles[v.id].item_type == 0 && $data.articles[v.id].thumbnails.length < 3 && $data.articles[v.id].thumbnails.length >0}}
+    <li class="styletype1" onclick="window.location.href='{{$data.articles[v.id].url}}'">
+      <div class="left">
+        <h5 class="title">{{$data.articles[v.id].title}}</h5>
+        <div class="foot">
+          <!-- <span class="grab_time">15分钟前</span> -->
+          <span class="source_name">{{$data.articles[v.id].source_name}}</span>
+          <span class="iconfont icon-pinglun"></span>
+          <span class="cmt_cnt">{{$data.articles[v.id].cmt_cnt}}</span>
+        </div>
+      </div>
+      <div class="right">
+        <img class="thumbnails" src="{{$data.articles[v.id].thumbnails[0].url+'&width=100&height=73'}}" alt="这是唯一的一张图">
+      </div>
+    </li>
+    {{else if $data.articles[v.id].style_type == 2 && $data.articles[v.id].item_type != 8}}
+    <li class="styletype2" onclick="window.location.href='{{$data.articles[v.id].url}}'">
+      <div class="left">
+        <img class="thumbnails" src="{{$data.articles[v.id].thumbnails+'&width=100&height=73'}}" alt="">
+      </div>
+      <div class="right">
+        <h5 class="title">{{$data.articles[v.id].title}}</h5>
+        <div class="foot">
+          <!-- <span class="grab_time">15分钟前</span> -->
+          <span class="source_name">{{$data.articles[v.id].source_name}}</span>
+          <span class="iconfont icon-pinglun"></span>
+          <!-- <img class="bottom_left_mark mark_icon_url" src="" alt="角标图标url"> -->
+          <span class="cmt_cnt">{{$data.articles[v.id].cmt_cnt}}</span>
+        </div>
+      </div>
+    </li>
+    {{else if $data.articles[v.id].style_type == 3 && $data.articles[v.id].item_type != 8}}
+    <li class="styletype3" onclick="window.location.href='{{$data.articles[v.id].url}}'">
+      <h5 class="title">{{$data.articles[v.id].title}}</h5>
+      <img class="thumbnails" src="{{$data.articles[v.id].thumbnails[0].url+'&width=340&height=160'}}" alt="">
+      <h6 class="subhead"></h6>
+      <div class="foot">
+        <!-- <span class="grab_time">15分钟前</span> -->
+        <span class="source_name">{{$data.articles[v.id].source_name}}</span>
+        <span class="iconfont icon-pinglun"></span>
+        <!-- <img class="bottom_left_mark mark_icon_url" src="" alt="角标图标url"> -->
+        <span class="cmt_cnt">{{$data.articles[v.id].cmt_cnt}}</span>
+      </div>
+    </li>
+    {{else if $data.articles[v.id].style_type == 4 && $data.articles[v.id].item_type != 8}}
+    <li class="styletype4" onclick="window.location.href='{{$data.articles[v.id].url}}'">
+      <h5 class="title">{{$data.articles[v.id].title}}</h5>
+      <h6 class="subhead"></h6>
+      <div class="foot">
+        <!-- <span class="grab_time"></span> -->
+        <span class="source_name">{{$data.articles[v.id].source_name}}</span>
+        <span class="iconfont icon-pinglun"></span>
+        <!-- <img class="bottom_left_mark mark_icon_url" src="" alt="角标图标url"> -->
+        <span class="cmt_cnt">{{$data.articles[v.id].cmt_cnt}}</span>
+      </div>
+    </li>
+    {{else if $data.articles[v.id].style_type == 5 && $data.articles[v.id].item_type != 8}}
+    <li class="styletype5" onclick="window.location.href='{{$data.articles[v.id].url}}'">
+      <h5 class="title">{{$data.articles[v.id].title}}</h5>
+      <h6 class="subhead"></h6>
+      <div class="thumbnails">
+        <img class="thumbnails" src="{{$data.articles[v.id].thumbnails[0].url+'&width=108.8&height=90'}}" alt="">
+        <img class="thumbnails" src="{{$data.articles[v.id].thumbnails[1].url+'&width=108.8&height=90'}}" alt="">
+        <img class="thumbnails" src="{{$data.articles[v.id].thumbnails[2].url+'&width=108.8&height=90'}}" alt="">
+      </div>
+      <div class="foot">
+        <span class="source_name">{{$data.articles[v.id].source_name}}</span>
+        <span class="iconfont icon-pinglun"></span>
+        <!-- <img class="bottom_left_mark mark_icon_url" src="" alt="角标图标url"> -->
+        <span class="cmt_cnt">{{$data.articles[v.id].cmt_cnt}}</span>
+      </div>
+    </li>
+    {{else if $data.articles[v.id].style_type == 0 && $data.articles[v.id].item_type == 0 && $data.articles[v.id].thumbnails.length > 0 && $data.articles[v.id].thumbnails.length < 3}}
+    <li class="styletype1" onclick="window.location.href='{{$data.articles[v.id].url}}'">
+      <div class="left">
+        <h5 class="title">{{$data.articles[v.id].title}}</h5>
+        <div class="foot">
+          <!-- <span class="grab_time">15分钟前</span> -->
+          <span class="source_name">{{$data.articles[v.id].source_name}}</span>
+          <span class="iconfont icon-pinglun"></span>
+          <span class="cmt_cnt">{{$data.articles[v.id].cmt_cnt}}</span>
+        </div>
+      </div>
+      <div class="right">
+        <img class="thumbnails" src="{{$data.articles[v.id].thumbnails[0].url+'&width=100&height=73'}}" alt="这是唯一的一张图">
+      </div>
+    </li>
+    {{else if $data.articles[v.id].style_type == 0 && $data.articles[v.id].item_type == 1 && $data.articles[v.id].thumbnails.length > 0 && $data.articles[v.id].thumbnails.length < 3}}
+    <li class="styletype1" onclick="window.location.href='{{$data.articles[v.id].url}}'">
+      <div class="left">
+        <h5 class="title">{{$data.articles[v.id].title}}</h5>
+        <div class="foot">
+          <!-- <span class="grab_time">15分钟前</span> -->
+          <span class="source_name">{{$data.articles[v.id].source_name}}</span>
+          <span class="iconfont icon-pinglun"></span>
+          <span class="cmt_cnt">{{$data.articles[v.id].cmt_cnt}}</span>
+        </div>
+      </div>
+      <div class="right">
+        <img class="thumbnails" src="{{$data.articles[v.id].thumbnails[0].url+'&width=100&height=73'}}" alt="这是唯一的一张图">
+      </div>
+    </li>
+    {{else if $data.articles[v.id].style_type == 0 && $data.articles[v.id].item_type == 2 && $data.articles[v.id].thumbnails.length > 0 && $data.articles[v.id].thumbnails.length < 3}}
+    <li class="styletype1" onclick="window.location.href='{{$data.articles[v.id].url}}'">
+      <div class="left">
+        <h5 class="title">{{$data.articles[v.id].title}}</h5>
+        <div class="foot">
+          <!-- <span class="grab_time">15分钟前</span> -->
+          <span class="source_name">{{$data.articles[v.id].source_name}}</span>
+          <span class="iconfont icon-pinglun"></span>
+          <span class="cmt_cnt">{{$data.articles[v.id].cmt_cnt}}</span>
+        </div>
+      </div>
+      <div class="right">
+        <img class="thumbnails" src="{{$data.articles[v.id].thumbnails[0].url+'&width=100&height=73'}}" alt="这是唯一的一张图">
+      </div>
+    </li>
+    {{else if $data.articles[v.id].style_type == 0 && $data.articles[v.id].item_type == 6 && $data.articles[v.id].thumbnails.length > 0 }}
+    <li class="styletype1" onclick="window.location.href='{{$data.articles[v.id].url}}'">
+      <div class="left">
+        <h5 class="title">{{$data.articles[v.id].title}}</h5>
+        <div class="foot">
+          <!-- <span class="grab_time">15分钟前</span> -->
+          <span class="source_name">{{$data.articles[v.id].source_name}}</span>
+          <span class="iconfont icon-pinglun"></span>
+          <span class="cmt_cnt">{{$data.articles[v.id].cmt_cnt}}</span>
+        </div>
+      </div>
+      <div class="right">
+        <img class="thumbnails" src="{{$data.articles[v.id].thumbnails[0].url+'&width=100&height=73'}}" alt="这是唯一的一张图">
+      </div>
+    </li>
+    {{else if $data.articles[v.id].style_type == 0 && $data.articles[v.id].thumbnails.length == 0 && ( ($data.articles[v.id].item_type == 0) || ($data.articles[v.id].item_type == 1) || ($data.articles[v.id].item_type == 6)|| ($data.articles[v.id].item_type == 30) )}}
+    <li class="styletype4" onclick="window.location.href='{{$data.articles[v.id].url}}'">
+      <h5 class="title">{{$data.articles[v.id].title}}</h5>
+      <h6 class="subhead"></h6>
+      <div class="foot">
+        <!-- <span class="grab_time"></span> -->
+        <span class="source_name">{{$data.articles[v.id].source_name}}</span>
+        <span class="iconfont icon-pinglun"></span>
+        <!-- <img class="bottom_left_mark mark_icon_url" src="" alt="角标图标url"> -->
+        <span class="cmt_cnt">{{$data.articles[v.id].cmt_cnt}}</span>
+      </div>
+    </li>
+    {{else if $data.articles[v.id].style_type == 0 && $data.articles[v.id].item_type == 30 && $data.articles[v.id].thumbnails.length == 0}}
+    <li class="styletype4" onclick="window.location.href='{{$data.articles[v.id].url}}'">
+      <h5 class="title">{{$data.articles[v.id].title}}</h5>
+      <h6 class="subhead"></h6>
+      <div class="foot">
+        <!-- <span class="grab_time"></span> -->
+        <span class="source_name">{{$data.articles[v.id].source_name}}</span>
+        <span class="iconfont icon-pinglun"></span>
+        <!-- <img class="bottom_left_mark mark_icon_url" src="" alt="角标图标url"> -->
+        <span class="cmt_cnt">{{$data.articles[v.id].cmt_cnt}}</span>
+      </div>
+    </li>
+    {{else if ($data.articles[v.id].style_type == 0 && $data.articles[v.id].thumbnails.length > 2) && ($data.articles[v.id].item_type == 0 || $data.articles[v.id].item_type == 1 || $data.articles[v.id].item_type == 2)}}
+    <li class="styletype5" onclick="window.location.href='{{$data.articles[v.id].url}}'">
+      <h5 class="title">{{$data.articles[v.id].title}}</h5>
+      <h6 class="subhead"></h6>
+      <div class="thumbnails">
+        <img class="thumbnails" src="{{$data.articles[v.id].thumbnails[0].url+'&width=108.8&height=90'}}" alt="">
+        <img class="thumbnails" src="{{$data.articles[v.id].thumbnails[1].url+'&width=108.8&height=90'}}" alt="">
+        <img class="thumbnails" src="{{$data.articles[v.id].thumbnails[2].url+'&width=108.8&height=90'}}" alt="">
+      </div>
+      <div class="foot">
+        <span class="source_name">{{$data.articles[v.id].source_name}}</span>
+        <span class="iconfont icon-pinglun"></span>
+        <!-- <img class="bottom_left_mark mark_icon_url" src="" alt="角标图标url"> -->
+        <span class="cmt_cnt">{{$data.articles[v.id].cmt_cnt}}</span>
+      </div>
+    </li>
+    {{else if $data.articles[v.id].style_type == 0 && $data.articles[v.id].item_type == 30 && $data.articles[v.id].thumbnails.length > 0}}
+    <li class="video-styletype27" onclick="window.location.href='{{$data.articles[v.id].url}}'">
+      <h5 class="title">{{$data.articles[v.id].title}}</h5>
+      <div class="videoImg">
+        <span  class="view_cnt">{{$data.articles[v.id].videos[0].view_cnt|getNumber}}</span>
+        <span  class="length">{{$data.articles[v.id].videos[0].length|getTime}}</span>
+        <span class="iconfont icon-bofang"></span>
+        <img class="thumbnails" src="{{$data.articles[v.id].thumbnails[0].url+'&width=340&height=160'}}" alt="">
+      </div>
+      <h6 class="subhead"></h6>
+      <div class="foot">
+        <!-- <span class="grab_time">15分钟前</span> -->
+        <span class="source_name">{{$data.articles[v.id].source_name}}</span>
+        <span class="iconfont icon-pinglun"></span>
+        <!-- <img class="bottom_left_mark mark_icon_url" src="" alt="角标图标url"> -->
+        <span class="cmt_cnt">{{$data.articles[v.id].cmt_cnt}}</span>
+      </div>
+    </li>
+    {{else if $data.articles[v.id].style_type == 0 && (($data.articles[v.id].item_type == 5) || ($data.articles[v.id].item_type == 7) || ($data.articles[v.id].item_type == 8) || ($data.articles[v.id].item_type == 9) || ($data.articles[v.id].item_type == 15))}}
+    <!-- 丢弃 -->
+    {{else if $data.articles[v.id].style_type == 0 && $data.articles[v.id].thumbnails.length > 0}}
+    <!-- 样式1 -->
+    <li class="styletype1" onclick="window.location.href='{{$data.articles[v.id].url}}'">
+      <div class="left">
+        <h5 class="title">{{$data.articles[v.id].title}}</h5>
+        <div class="foot">
+          <!-- <span class="grab_time">15分钟前</span> -->
+          <span class="source_name">{{$data.articles[v.id].source_name}}</span>
+          <span class="iconfont icon-pinglun"></span>
+          <span class="cmt_cnt">{{$data.articles[v.id].cmt_cnt}}</span>
+        </div>
+      </div>
+      <div class="right">
+        <img class="thumbnails" src="{{$data.articles[v.id].thumbnails[0].url+'&width=100&height=73'}}" alt="">
+      </div>
+    </li>
+    {{else if $data.articles[v.id].style_type == 0 && $data.articles[v.id].thumbnails.length == 0}}
+    <!-- 样式4 -->
+    <li class="styletype4" onclick="window.location.href='{{$data.articles[v.id].url}}'">
+      <h5 class="title">{{$data.articles[v.id].title}}</h5>
+      <h6 class="subhead"></h6>
+      <div class="foot">
+        <!-- <span class="grab_time"></span> -->
+        <span class="source_name">{{$data.articles[v.id].source_name}}</span>
+        <span class="iconfont icon-pinglun"></span>
+        <!-- <img class="bottom_left_mark mark_icon_url" src="" alt="角标图标url"> -->
+        <span class="cmt_cnt">{{$data.articles[v.id].cmt_cnt}}</span>
+      </div>
+    </li>
+    {{else if $data.articles[v.id].style_type == 1 && !$data.articles[v.id].app_download_desc && $data.articles[v.id].item_type == 8}}
+    <li class="ad-styletype1" onclick="window.location.href='{{$data.articles[v.id].url}}'">
+      <div class="left">
+        <h5 class="title">{{$data.articles[v.id].title}}</h5><!-- 主标题 -->
+        <div class="foot">
+          <span class="iconfont icon-laba"></span>
+          <span class="mark">推广</span><!-- 角标文案颜色 -->
+          <!-- <span class="grab_time">刚刚</span> -->
+          <span class="source_name">{{$data.articles[v.id].source_name}}</span> <!-- 广告来源，非必填项 -->
+          <span class="iconfont icon-cuowu"></span>
+        </div>
+      </div>
+      <div class="right">
+        <img class="thumbnails" src="{{$data.articles[v.id].thumbnails[0].url+'&width=100&height=73'}}" alt="">
+      </div>
+    </li>
+    <!-- style_type=1 且有下载按钮 -->
+    {{else if $data.articles[v.id].style_type == 1 && $data.articles[v.id].app_download_desc && $data.articles[v.id].item_type == 8}}
+    <li class="ad-styletype2" onclick="window.location.href='{{$data.articles[v.id].url}}'">
+      <div class="top">
+        <div class="left">
+          <h5 class="title">{{$data.articles[v.id].title}}</h5><!-- 主标题 -->
+          <h6 class="subhead">{{$data.articles[v.id].subhead}}</h6><!-- 副标题 -->
+          <button class="app_download" onclick="window.location.href='{{$data.articles[v.id].app_download_url}}'">{{$data.articles[v.id].app_download_desc}}</button>
+        </div>
+        <div class="right">
+          <!-- 缩略图 -->
+          <img class="thumbnails" src="{{$data.articles[v.id].thumbnails[0].url+'&width=100&height=73'}}" alt="">
+        </div>
+      </div>
+      <div class="foot">
+        <span class="iconfont icon-laba"></span>
+        <span class="mark">推广</span><!-- 角标文案颜色 -->
+        <!-- <span class="grab_time">刚刚</span> -->
+        <span class="source_name">{{$data.articles[v.id].source_name}}</span> <!-- 广告来源，非必填项 -->
+        <span class="iconfont icon-cuowu"></span>
+      </div>
+    </li>
+    {{else if $data.articles[v.id].style_type == 3 && !$data.articles[v.id].app_download_desc && $data.articles[v.id].item_type == 8}}
+    <li class="ad-styletype3" onclick="window.location.href='{{$data.articles[v.id].url}}'">
+      <!-- 标题 -->
+      <h5 class="title">{{$data.articles[v.id].title}}</h5><!-- 主标题 -->
+      <!-- 缩略图 -->
+      <img class="thumbnails" src="{{$data.articles[v.id].thumbnails[0].url+'&width=340&height=120'}}" alt="">
+      <div class="foot">
+        <span class="iconfont icon-laba"></span>
+        <span class="mark">推广</span><!-- 角标文案颜色 -->
+        <!-- <span class="grab_time">刚刚</span> -->
+        <span class="source_name">{{$data.articles[v.id].source_name}}</span> <!-- 广告来源，非必填项 -->
+        <span class="iconfont icon-cuowu"></span>
+      </div>
+    </li>
+    {{else if $data.articles[v.id].style_type == 3 && $data.articles[v.id].app_download_desc && $data.articles[v.id].item_type == 8}}
+    <li class="ad-styletype4" onclick="window.location.href='{{$data.articles[v.id].url}}'">
+      <!-- 标题 -->
+      <h5 class="title">{{$data.articles[v.id].title}}</h5><!-- 主标题 -->
+      <!-- 缩略图 -->
+      <img class="thumbnails" src="{{$data.articles[v.id].thumbnails[0].url+'&width=340&height=120'}}" alt="">
+      <div>
+        <h6 class="subhead">{{$data.articles[v.id].subhead}}</h6><!-- 副标题 -->
+        <!-- article.app_download_url：下载按钮连接
+          article.app_download_desc：下载按钮文字 -->
+        <button class="app_download">{{$data.articles[v.id].app_download_desc}}</button>
+      </div>
+      <div class="foot">
+        <span class="iconfont icon-laba"></span>
+        <span class="mark">推广</span><!-- 角标文案颜色 -->
+        <!-- <span class="grab_time">刚刚</span> -->
+        <span class="source_name">{{$data.articles[v.id].source_name}}</span> <!-- 广告来源，非必填项 -->
+        <span class="iconfont icon-cuowu"></span>
+      </div>
+    </li>
+    {{else if $data.articles[v.id].style_type == 5 && $data.articles[v.id].app_download_desc && $data.articles[v.id].item_type == 8}}
+    <li class="ad-styletype5" onclick="window.location.href='{{$data.articles[v.id].url}}'">
+      <!-- 标题 -->
+      <h5 class="title">{{$data.articles[v.id].title}}</h5><!-- 主标题 -->
+      <!-- 缩略图 -->
+      <div class="thumbnails">
+        <img class="thumbnails" src="{{$data.articles[v.id].thumbnails[0].url+'&width=108.8&height=90'}}" alt="">
+        <img class="thumbnails" src="{{$data.articles[v.id].thumbnails[1].url+'&width=108.8&height=90'}}" alt="">
+        <img class="thumbnails" src="{{$data.articles[v.id].thumbnails[2].url+'&width=108.8&height=90'}}" alt="">
+      </div>
+      <div class="foot">
+        <span class="iconfont icon-laba"></span>
+        <span class="mark">推广</span><!-- 角标文案颜色 -->
+        <!-- <span class="grab_time">刚刚</span> -->
+        <span class="source_name">{{$data.articles[v.id].source_name}}</span> <!-- 广告来源，非必填项 -->
+        <span class="iconfont icon-cuowu"></span>
+      </div>
+    </li>
+    {{else if $data.articles[v.id].style_type == 88 && !$data.articles[v.id].app_download_desc && $data.articles[v.id].item_type == 8}}
+    <li class="ad-styletype6" onclick="window.location.href='{{$data.articles[v.id].url}}'">
+      <h5 class="title">{{$data.articles[v.id].title}}</h5><!-- 主标题 -->
+      <!-- 缩略图 -->
+      <img class="thumbnails" src="{{$data.articles[v.id].thumbnails[0].url+'&width=340&height=225'}}" alt="">
+      <div class="foot">
+        <span class="iconfont icon-guanggao"></span>
+        <!-- <span class="mark">推广</span>角标文案颜色
+        <span class="grab_time">刚刚</span> -->
+        <span class="source_name">{{$data.articles[v.id].source_name}}</span> <!-- 广告来源，非必填项 -->
+        <!-- <span class="iconfont icon-cuowu"></span> -->
+      </div>
+    </li>
+    {{else if $data.articles[v.id].style_type == 88 && $data.articles[v.id].app_download_desc && $data.articles[v.id].item_type == 8}}
+    <li class="ad-styletype7" onclick="window.location.href='{{$data.articles[v.id].url}}'">
+      <h5 class="title">{{$data.articles[v.id].title}}</h5><!-- 主标题 -->
+      <!-- 缩略图 -->
+      <img class="thumbnails" src="{{$data.articles[v.id].thumbnails[0].url+'&width=340&height=225'}}" alt="">
+      <div class="foot">
+        <span class="iconfont icon-guanggao"></span>
+        <!-- <span class="mark">推广</span>角标文案颜色
+        <span class="grab_time">刚刚</span> -->
+        <span class="source_name">{{$data.articles[v.id].source_name}}</span> <!-- 广告来源，非必填项 -->
+        <!-- <span class="iconfont icon-cuowu"></span> -->
+        <button class="app_download">{{$data.articles[v.id].app_download_desc}}</button>
+      </div>
+    </li>
+    {{else if $data.articles[v.id].style_type == 20 && $data.articles[v.id].item_type == 8}}
+    <li class="ad-styletype8" onclick="window.location.href='{{$data.articles[v.id].url}}'">
+      <h5 class="title">{{$data.articles[v.id].title}}</h5><!-- 主标题 -->
+      <!-- 缩略图 -->
+      <img class="thumbnails" src="{{$data.articles[v.id].thumbnails[0].url+'&width=340&height=225'}}" alt="">
+      <div class="foot">
+        <span class="iconfont icon-guanggao"></span>
+        <!-- <span class="mark">推广</span>角标文案颜色
+        <span class="grab_time">刚刚</span> -->
+        <span class="source_name">{{$data.articles[v.id].source_name}}</span> <!-- 广告来源，非必填项 -->
+        <span class="iconfont icon-cuowu"></span>
+      </div>
+    </li>
+    {{else if $data.articles[v.id].style_type == 27 && $data.articles[v.id].item_type == 8}}
+    <li class="ad-styletype9" onclick="window.location.href='{{$data.articles[v.id].url}}'">
+      <h5 class="title">{{$data.articles[v.id].title}}</h5><!-- 主标题 -->
+      <!-- 缩略图 -->
+      <img class="thumbnails" src="{{$data.articles[v.id].thumbnails[0].url+'&width=340&height=225'}}" alt="">
+      <div class="foot">
+        <span class="iconfont icon-guanggao"></span>
+        <!-- <span class="mark">推广</span>角标文案颜色
+        <span class="grab_time">刚刚</span> -->
+        <span class="source_name">{{$data.articles[v.id].source_name}}</span> <!-- 广告来源，非必填项 -->
+        <span class="iconfont icon-cuowu"></span>
+      </div>
+    </li>
+    {{else}}
+    {{/if}}
+    {{/each}}
+</script>
+
+<script type="text/javascript">
+  // 导航列表
+  let navList = []
+  let myToken = '1578640615255-6282a1850e4020ff94fa863ffd451a10-cd27381c4a9b1e24fab508b99ddf683b'
+  let app = 'egg-iflow'
+  let dn = (new Date()).valueOf() + Math.ceil(Math.random() * 100000);
+  let fr = 'ios'
+  let ve = '1.0.0.0'
+  let imei = '564478546254125'
+  let oaid = '564478546254125'
+  let nt = 2
+  let client_ip = '116.228.138.218'
+  // 监听input框的内容，有内容就显示清除内容的小图标
+  var input = document.getElementById('sousuoInput')
+  var clearSousuo = document.getElementById('clearSousuoInput')
+  // 初始页码
+  let listNumber = 1
+
+  // 初始频道新闻ID
+  let listId = 100
+
+  getChannelList() // 获取频道列表
+  getChannelNewsList(listId, listNumber) // 获取推荐频道新闻列表
+
+  // 监听搜索框的变化
+  input.oninput = function () {
+    if (input.value) {
+      console.log('有值')
+      $(clearSousuo).addClass('show')
+    } else {
+      console.log('没值')
+      $(clearSousuo).removeClass('show')
+    }
+  }
+
+  // 点击清除搜索input框
+  function clearsousuo() {
+    console.log('清除')
+    document.getElementById('sousuoInput').value = ''
+    $(clearSousuo).removeClass('show')
+  }
+
+  // 点击搜索
+  function search() {
+    console.log('搜索')
+  }
+
+  // 点击某个频道
+  function djnav(e, id) {
+    console.log(id)
+    $(e).addClass('sele').siblings().removeClass('sele')
+    // 初始页码为1
+    listNumber = 1
+    // 清空内容区域
+    $('.content').children().remove()
+    getChannelNewsList(id, listNumber)
+
+  }
+
+  // 获取access_token
+  function getTokrn() {
+    let obj = {
+      app_id: '',
+      app_secret: ''
+    }
+    $.ajax({
+      type: 'post',
+      url: 'https://open.uczzd.cn/openiflow/auth/token',
+      data: obj,
+      success: function (success) {
+        console.log(success)
+      },
+      error: function (error) {
+        console.error('获取数据错误' + error);
+      }
+    })
+  }
+
+  // 获取频道列表
+  function getChannelList() {
+    $.ajax({
+      type: 'get',
+      url: `https://open.uczzd.cn/openiflow/openapi/v3/channels?access_token=${myToken}`,
+      dataType: 'jsonp',
+      headers: {
+        "content-type": "application/json; charset=utf-8",
+      },
+      data: {
+        'app': app,
+        'dn': dn,
+        'fr': fr,
+        've': ve,
+        'imei': imei,
+        'oaid': oaid,
+        'nt': nt,
+        'client_ip': client_ip,
+      },
+      success: function (success) {
+        console.log(success)
+        if (success.status == 0) {
+          navList = success.data
+          $('#navList').html(template('tmp1', navList))
+          // 每隔li的宽度都是50px,动态计算ul宽度
+          // console.log(navList)
+          // console.log(navList.channel.length)
+          $('#navList').css('width', navList.channel.length * .5 + 'rem')
+          $('#navList').children(":first").addClass("sele")
+        }
+      },
+      error: function (error) {
+        console.error('获取数据错误' + error);
+      }
+    })
+  }
+
+  // 获取单个频道新闻列表第n屏
+  function getChannelNewsList(id, num) {
+    $.ajax({
+      type: 'get',
+      url: `https://open.uczzd.cn/openiflow/openapi/v3/channel/${id}?access_token=${myToken}`,
+      dataType: 'jsonp',
+      headers: {
+        "content-type": "application/json; charset=utf-8",
+      },
+      data: {
+        'app': app,
+        'dn': dn,
+        'fr': fr,
+        've': ve,
+        'imei': imei,
+        'oaid': oaid,
+        'nt': nt,
+        'client_ip': client_ip,
+      },
+      success: function (success) {
+        console.log(success)
+        if (success.status == 0) {
+          let data = success.data
+          let articlesList = document.createElement("ul")
+          articlesList.setAttribute("id", "articles" + num)
+          $('.content').append(articlesList)
+          $(`#articles${num}`).html(template('tmp2', data))
+          listNumber++
+        }
+      },
+      error: function (error) {
+        console.error('获取数据错误' + error);
+      }
+    })
+  }
+  // 节流初始时间戳
+  let pastDate = Date.now()
+  // 点击节流按钮触发函数
+  function throttle(time) {
+    console.log('节流中')
+    let nowDate = Date.now()
+    if (nowDate - pastDate > time) {
+      console.log('节流情况下发送请求啦')
+      getChannelNewsList(listId, listNumber)
+      pastDate = Date.now()
+    }
+  }
+  //滚动时触发 
+  window.onscroll = function () {
+    // 滚动高度
+    let scrollTop = window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop || 0
+    if ($(document).height() - scrollTop - document.documentElement.clientHeight < 300) {
+      throttle(1000)
+    }
+  }
+</script>
+
+</html>

@@ -1,0 +1,179 @@
+html,
+body,
+div,
+ul,
+li,
+img,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+button,
+textarea,
+p {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html,
+body {
+  background-color: #f8f4f4;
+}
+
+img,
+fieldset {
+  border: 0 none
+}
+
+input,
+textarea {
+  font-size: 0.12rem;
+  outline: none;
+  border: none;
+}
+
+button {
+  border: none;
+}
+
+video {
+  border: none;
+}
+
+video:focus {
+  border: none;
+}
+
+button:focus {
+  outline: none;
+}
+
+input:focus {
+  outline: none;
+}
+
+textarea:focus {
+  outline: none;
+}
+
+textarea::-webkit-input-placeholder {
+  /* WebKit browsers */
+  color: #b2b2b2;
+  font-size: 0.12rem;
+
+}
+
+textarea:-moz-placeholder {
+  /* Mozilla Firefox 4 to 18 */
+  color: #b2b2b2;
+  font-size: 0.12rem;
+
+}
+
+textarea::-moz-placeholder {
+  /* Mozilla Firefox 19+ */
+  color: #b2b2b2;
+  font-size: 0.12rem;
+
+}
+
+textarea::-ms-input-placeholder {
+  /* Internet Explorer 10+ */
+  color: #b2b2b2;
+  font-size: 0.12rem;
+
+}
+
+input::input-placeholder {
+  color: #b2b2b2;
+  font-size: 0.12rem;
+}
+
+
+input::-webkit-input-placeholder {
+  color: #b2b2b2;
+  font-size: 0.12rem;
+}
+
+input::-moz-input-placeholder {
+  color: #b2b2b2;
+  font-size: 0.12rem;
+}
+
+input::-ms-input-placeholder {
+  color: #b2b2b2;
+  font-size: 0.12rem;
+}
+
+input::-o-input-placeholder {
+  color: #b2b2b2;
+  font-size: 0.12rem;
+}
+
+textarea {
+  resize: none;
+}
+
+table {
+  border-collapse: collapse;
+  border-spacing: 0;
+}
+
+ul,
+ol,
+li {
+  list-style: none outside none;
+}
+
+a {
+  color: #003d7e;
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+img {
+  width: 100%;
+}
+
+/* 展示隐藏 */
+.hidden {
+  display: none !important;
+}
+
+.show {
+  display: block !important;
+}
+
+/* 消息提示框 */
+.info {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  height: 0.48rem;
+  line-height: 0.48rem;
+  width: 2.08rem;
+  font-size: 0.14rem;
+  color: #FFFFFF;
+  border-radius: 0.08rem;
+  text-align: center;
+  background-color: #00000080;
+}
+
+.error {
+  background-color: #fef0f0;
+  border-color: #fde2e2;
+  color: #f56c6c;
+}
+
+.success {
+  color: #67c23a;
+  background-color: #f0f9eb;
+  border: 0.01rem solid #ebeef5;
+}

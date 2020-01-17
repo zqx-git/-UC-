@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Document</title>
+  <style>
+    html,
+    body {
+      margin: 0;
+      padding: 0;
+    }
+
+    button {
+      width: 150px;
+      height: 30px;
+      background-color: rgb(255, 187, 187);
+      border-radius: 10px;
+      display: block;
+      margin: 20px auto;
+    }
+  </style>
+</head>
+
+<body>
+  <button onclick="throttle(2000)">节流</button>
+  <button onclick="debounce(500)">防抖</button>
+  <script type="text/javascript">
+    // 节流初始时间戳
+    let pastDate = new Date().valueOf()
+    // 点击节流按钮触发函数
+    function throttle(time) {
+      console.log('点击节流按钮啦')
+      let nowDate = new Date().valueOf()
+      if (nowDate - pastDate > time) {
+        console.log('节流情况下发送请求啦')
+        let articlesList = document.createElement("ul")
+        articlesList.setAttribute("id", "articles" + num)
+        $('.content').append(articlesList)
+        pastDate = new Date().valueOf()
+      }
+    }
+    // 防抖初始变量
+    let debouncTtimeout
+    // 点击防抖按钮触发函数
+    function debounce(time) {
+      console.log("点击防抖按钮啦")
+      clearTimeout(timeout)
+      debouncTtimeout = setTimeout(function () {
+        console.log("执行防抖操作")
+      }, time)
+    }
+  </script>
+</body>
+
+</html>
+// 点击按钮,触发事件
+
+// 节流
+// 第一次点击立刻触发事件,此后点击时间与上次触发事件的时间大于3s才会触发.
+// 就像纸条经过打孔机,虽然纸条一直在向前滚动(相当于一直在点击),但是打孔机是每隔3s打一个孔(相当于每3秒触发一次事件)
+
+
+// 防抖
+// 点击后不触发事件,等待5s后触发,在这5s内,如果有新的点击,则清除原先的等待时间,从新等待5s.
+// 就像消消乐游戏(开始就相当于点击了一次),5秒钟内不能成功进行一次消除(等待5s后触发),游戏结束(触发事件).
+// 5秒内有成功的消除(相当于新的点击),则从成功消除的时间起再等待5s结束(相当于清除原先的等待时间,从新等待5s).
+
+
+
+// 怎么实现功能呢?
+// 把点击事件和请求事件分离开
+// 点击之后根据条件触发请求
+
+// 节流是:
+// 点击后进行判断当前时间戳与初始时间戳是否大于3s,大于三秒就进行请求,并且将初始时间戳改为当前时间戳,小于三秒就不请求.
+
+// 防抖是:
+// 点击后500ms不做请求操作,500ms内如果没有点击就进行请求,如果有点击就不请求.

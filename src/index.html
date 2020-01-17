@@ -19,7 +19,7 @@
 <body>
   <div class="search">
     <div>
-      <button>搜 索</button>
+      <button onclick="search()">搜 索</button>
       <span class="fenge">|</span>
       <span class="iconfont icon-cuowu hidden" id="clearSousuoInput" onclick="clearsousuo()"></span>
       <input type="text" placeholder="请输入要搜索的内容" id="sousuoInput" />
@@ -492,6 +492,10 @@
   // 点击搜索
   function search() {
     console.log('搜索')
+    console.log($('#sousuoInput').val())
+    $('#sousuoInput').val()
+    // 获取搜索input框的内容
+
   }
 
   // 点击某个频道
